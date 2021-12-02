@@ -6,19 +6,19 @@ month_days = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10:
 @dataclass
 class Days:
     """An auxiliary class for adding/subtracting days form a date"""
-    value: int
+    value_calender: int
 
 
 @dataclass
 class Months:
     """An auxiliary class for adding/subtracting months form a date"""
-    value: int
+    value_calender: int
 
 
 @dataclass
 class Years:
     """An auxiliary class for adding/subtracting years form a date"""
-    value: int
+    value_calender: int
 
 
 class Calendar:
@@ -30,10 +30,13 @@ class Calendar:
         self.month = month
         self.day = day
 
+    def is_leap(self):
+        return not self.__year % 4 or not self.__year % 100 and not self.__year % 400
+
     def day_check(self, day):
         """A method for checking if current day is allowed to exist in current month and year"""
         days = month_days[self.__month]
-        if not self.__year % 4 and self.__month == 2:
+        if self.__month == 2 and self.is_leap():
             days += 1
         return 1 <= day <= days
 
@@ -78,21 +81,21 @@ class Calendar:
         """Overloading __iadd__, input is an instance of Days, Years or Months dataclass
             if the value of instance is negative calls overloaded __isub__. Automatically brings the instance of
             Calendar to allowed form"""
-        if other.value < 0:
-            other.value = -other.value
+        if other.value_calender < 0:
+            other.value_calender = -other.value_calender
             return Calendar.__isub__(self, other)
         if isinstance(other, Years):
-            self.__year += other.value
+            self.__year += other.value_calender
         elif isinstance(other, Months):
-            self.__month += other.value
+            self.__month += other.value_calender
         elif isinstance(other, Days):
-            self.__day += other.value
-        while self.__month > 12:
-            self.__year += 1
-            self.__month -= 12
+            self.__day += other.value_calender
+        if self.__month > 12:
+            self.__year += self.__month // 12
+            self.__month = self.__month % 12
         while not self.day_check(self.__day):
             self.__day -= month_days[self.__month]
-            if not self.__year % 4 and self.__month == 2:
+            if self.__month == 2 and self.is_leap():
                 self.__day -= 1
             self.__month += 1
             if self.__month > 12:
@@ -104,22 +107,22 @@ class Calendar:
         """Overloading __isub__, input is an instance of Days, Years or Months dataclass
             if the value of instance is negative calls overloaded __iadd__. Automatically brings the instance of
              Calendar to allowed form"""
-        if other.value < 0:
-            other.value = -other.value
+        if other.value_calender < 0:
+            other.value_calender = -other.value_calender
             return Calendar.__iadd__(self, other)
         if isinstance(other, Years):
-            self.__year -= other.value
+            self.__year -= other.value_calender
         elif isinstance(other, Months):
-            self.__month -= other.value
+            self.__month -= other.value_calender
         elif isinstance(other, Days):
-            self.__day -= other.value
-        while self.__month <= 0:
-            self.__year -= 1
-            self.__month += 12
-        while self.__day <= 0:
+            self.__day -= other.value_calender
+        if self.__month <= 0:
+            self.__year -= self.__month // 12
+            self.__month = self.__month % 12
+        while not self.day_check(self.__day):
             self.__month -= 1
             self.__day += month_days[self.__month]
-            if not self.__year % 4 and self.__month == 2:
+            if self.__month == 2 and self.is_leap():
                 self.__day += 1
             if self.__month <= 0:
                 self.__year -= 1
@@ -189,7 +192,9 @@ def main():
     obj = Calendar(29, 2, 2020)
     obj2 = Calendar(29, 2, 2020)
     print(obj == obj2)
-    obj2 += Days(50)
+    #obj2 += Days(50)
+    #print(obj2)
+    obj2 += Months(24)
     print(obj2)
     print(obj >= obj2)
 
