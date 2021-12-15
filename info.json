@@ -1,0 +1,5 @@
+[{"type":  "teacher", "name": "Tymchuk Oleg"},
+  {"type":  "offsite", "name":  "Teaching OOP in Python", "teacher":  "Tymchuk Oleg", "program":  ["basics", "advanced", "patterns"], "address": "Zoom meeting"},
+  {"type":  "teacher", "name": "Some Teacher"},
+  {"type":  "local", "name":  "Local Course", "teacher":  "Some Teacher", "program":  ["cook an egg", "ride a bike", "idk"], "auditory":  "314 auditory"}
+]
